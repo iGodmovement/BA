@@ -173,31 +173,35 @@ def upload_image():
 
 @app.route('/summary/')
 def summary():
+    # Antworten aus allen Modulen abrufen
     basic_answers = session.get('basic_answers', {})
     express_answers = session.get('express_answers', {})
     advanced_answers = session.get('advanced_answers', {})
-    
+
+    # Alle Antworten und Modul-Scores sammeln
     all_answers = {
         'Basic': basic_answers,
         'Express': express_answers,
-        'Advanced': advanced_answers,
+        'Advanced': advanced_answers
     }
     
     module_scores = {
         'Basic': calculate_module_score(basic_answers),
         'Express': calculate_module_score(express_answers),
-        'Advanced': calculate_module_score(advanced_answers),
+        'Advanced': calculate_module_score(advanced_answers)
     }
     
+    # Gesamtscore berechnen
     total_score = sum(module_scores.values())
-    
-    # Speichern der Daten in der Session für den PDF-Export
+
+    # Daten in der Session speichern (für PDF-Export)
     session['all_answers'] = all_answers
     session['module_scores'] = module_scores
     session['total_score'] = total_score
-    
+
+    # Fragen aus der Datenbank abrufen
     questions = {str(q.id): q for q in Question.query.all()}
-    
+
     return render_template(
         'summary.html',
         all_answers=all_answers,
@@ -205,6 +209,8 @@ def summary():
         total_score=total_score,
         questions=questions
     )
+
+
 
 @app.route('/download_pdf', methods=['GET'])
 def download_pdf():
