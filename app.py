@@ -4,7 +4,11 @@ from PIL import Image
 import os
 import uuid
 import webbrowser
-from xhtml2pdf import pisa
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from io import BytesIO
 import pdfkit
 
 app = Flask(__name__)
@@ -204,27 +208,97 @@ def summary():
 
 @app.route('/download_pdf', methods=['GET'])
 def download_pdf():
-    # Geben Sie den vollständigen Pfad zu wkhtmltopdf an, falls es nicht im PATH ist
-    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Pfad anpassen!
-    
-    # Rendern der HTML-Template für die Summary
-    rendered_html = render_template(
-        'summary.html',
-        all_answers=session.get('all_answers', {}),
-        module_scores=session.get('module_scores', {}),
-        total_score=session.get('total_score', 0),
-        questions={str(q.id): q for q in Question.query.all()}
-    )
-    
-    # Generieren des PDFs aus dem HTML
-    pdf = pdfkit.from_string(rendered_html, False, configuration=config)
-    
-    # Erstellen einer HTTP-Response mit dem generierten PDF
-    response = make_response(pdf)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'attachment; filename=summary.pdf'
-    return response
+    # Daten aus der Session abrufen
+    all_answers = session.get('all_answers', {})
+    module_scores = session.get('module_scores', {})
+    total_score = session.get('total_score', 0)
+    questions = {str(q.id): q for q in Question.query.all()}  # Fragen aus der Datenbank
 
+    # BytesIO-Objekt für das PDF erstellen
+    pdf_buffer = BytesIO()
+    pdf = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+
+    # Elemente für das PDF sammeln
+    elements = []
+
+    # Titel hinzufügen
+    styles = getSampleStyleSheet()
+    title = [["Sanierungsbewertung - Zusammenfassung"]]
+    title_table = Table(title)
+    title_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 16),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+    ]))
+    elements.append(title_table)
+
+    # Gesamtscore hinzufügen
+    total_score_data = [[f"Gesamtscore: {total_score} Punkte"]]
+    total_score_table = Table(total_score_data)
+    total_score_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+    ]))
+    elements.append(total_score_table)
+
+    # Module und Fragen/Antworten hinzufügen
+    for module, answers in all_answers.items():
+        # Modultitel hinzufügen
+        module_title = [[f"{module} Modul"]]
+        module_table = Table(module_title)
+        module_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ]))
+        elements.append(module_table)
+
+        # Tabelle mit Fragen/Antworten/Scores erstellen
+        data = [["Frage", "Antwort", "Punkte"]]
+        
+        for question_id, answer in answers.items():
+            question_text = questions.get(question_id).text if question_id in questions else "Unbekannte Frage"
+            answer_text = answer.get('text', 'Keine Antwort')
+            score_text = str(answer.get('score', ''))
+
+            # Verwenden Sie Paragraphs für Zeilenumbruch
+            question_paragraph = Paragraph(question_text, styles["Normal"])
+            answer_paragraph = Paragraph(answer_text, styles["Normal"])
+            
+            data.append([question_paragraph, answer_paragraph, score_text])
+
+        table = Table(data, colWidths=[250, 150, 100])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('ALIGN', (1, 1), (-2, -2), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 1.5, colors.black),
+        ]))
+        elements.append(table)
+
+        # Abstand zwischen Modulen einfügen
+        elements.append(Spacer(1, 40))  
+
+    # PDF erstellen und zurückgeben
+    pdf.build(elements)
+    pdf_buffer.seek(0)
+    
+    response = make_response(pdf_buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'attachment; filename=sanierungsbewertung.pdf'
+    
+    return response
 
 
 
