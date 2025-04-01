@@ -523,4 +523,4 @@ if __name__ == '__main__':
         db.create_all()
         populate_database()
     webbrowser.open('http://127.0.0.1:5000')
-    app.run(debug=True, use_reloader=False)
+    app.run()
