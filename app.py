@@ -176,49 +176,55 @@ def summary():
     all_answers = {
         'Basic': basic_answers,
         'Express': express_answers,
-        'Advanced': advanced_answers
-    }  # Fehlende Klammer hier
+        'Advanced': advanced_answers,
+    }
     
     module_scores = {
         'Basic': calculate_module_score(basic_answers),
         'Express': calculate_module_score(express_answers),
-        'Advanced': calculate_module_score(advanced_answers)
-    }  # Fehlende Klammer hier
+        'Advanced': calculate_module_score(advanced_answers),
+    }
     
     total_score = sum(module_scores.values())
     
-    # Session-Daten für PDF speichern
+    # Speichern der Daten in der Session für den PDF-Export
     session['all_answers'] = all_answers
     session['module_scores'] = module_scores
     session['total_score'] = total_score
     
     questions = {str(q.id): q for q in Question.query.all()}
-    return render_template('summary.html', 
-                         all_answers=all_answers,
-                         module_scores=module_scores,
-                         total_score=total_score,
-                         questions=questions)
+    
+    return render_template(
+        'summary.html',
+        all_answers=all_answers,
+        module_scores=module_scores,
+        total_score=total_score,
+        questions=questions
+    )
 
 @app.route('/download_pdf', methods=['GET'])
 def download_pdf():
-    # Pfad zu wkhtmltopdf angeben (falls nicht im System-PATH)
-    config = pdfkit.configuration(wkhtmltopdf=r'C:\Pfad\zu\wkhtmltopdf.exe')  # Pfad anpassen!
+    # Geben Sie den vollständigen Pfad zu wkhtmltopdf an, falls es nicht im PATH ist
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Pfad anpassen!
     
-    # HTML rendern
-    rendered_html = render_template('summary.html',
-                                   all_answers=session.get('all_answers', {}),
-                                   module_scores=session.get('module_scores', {}),
-                                   total_score=session.get('total_score', 0),
-                                   questions={str(q.id): q for q in Question.query.all()})
+    # Rendern der HTML-Template für die Summary
+    rendered_html = render_template(
+        'summary.html',
+        all_answers=session.get('all_answers', {}),
+        module_scores=session.get('module_scores', {}),
+        total_score=session.get('total_score', 0),
+        questions={str(q.id): q for q in Question.query.all()}
+    )
     
-    # PDF generieren
+    # Generieren des PDFs aus dem HTML
     pdf = pdfkit.from_string(rendered_html, False, configuration=config)
     
-    # Response erstellen
+    # Erstellen einer HTTP-Response mit dem generierten PDF
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=summary.pdf'
     return response
+
 
 
 
@@ -523,4 +529,4 @@ if __name__ == '__main__':
         db.create_all()
         populate_database()
     webbrowser.open('http://127.0.0.1:5000')
-    app.run()
+    app.run(debug=True, use_reloader=False)
