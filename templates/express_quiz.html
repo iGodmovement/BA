@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express Modul</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* Versteckt die Radiobuttons */
+        .image-option input[type="radio"] {
+            display: none;
+        }
+
+        /* Styling für Bilder */
+        .image-option img {
+            width: 250px; /* Festgelegte Breite */
+            height: 250px; /* Festgelegte Höhe */
+            object-fit: cover; /* Passt das Bild an die vorgegebene Größe an */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer; /* Zeigt den Mauszeiger als Hand an */
+        }
+
+        /* Hover-Effekt für Bilder */
+        .image-option img:hover {
+            transform: scale(1.05); /* Vergrößert das Bild leicht bei Hover */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Schatteneffekt */
+        }
+
+        /* Markiertes Bild */
+        .image-option input[type="radio"]:checked + img {
+            border: 3px solid #007bff; /* Rahmenfarbe für ausgewähltes Bild */
+            box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.5); /* Schatteneffekt für ausgewähltes Bild */
+        }
+
+        .image-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-option span {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <a class="navbar-brand" href="#">Quiz App</a>
+    </nav>
+
+    <!-- Container -->
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Express Modul</h1>
+
+        <!-- Quiz Formular -->
+        <form method="POST" class="card p-4 shadow-sm">
+            {% if question.subtitle %}
+                <h5 class="card-title">{{ question.subtitle }}</h5>
+            {% endif %}
+            <p class="card-text">{{ question.text }}</p>
+
+            <!-- Bildfrage -->
+            {% if question.text == "Welche Form oder Kontur gleicht dein Gebäude am ehesten?" %}
+                <div class="row justify-content-center">
+                    {% for answer in question.answers %}
+                        <div class="col-md-3 mb-3 text-center image-option">
+                            <label>
+                                <!-- Versteckter Radiobutton -->
+                                <input type="radio" name="answer" value="{{ answer.id }}" required>
+                                <!-- Bild als Auswahloption -->
+                                <img src="{{ url_for('static', filename='images/' + answer.text.split()[-1] + '.jpg') }}" 
+                                     alt="{{ answer.text }}" 
+                                     title="{{ answer.text }}">
+                                <!-- Beschriftung unter dem Bild -->
+                                <span>{{ answer.text }}</span>
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            <!-- Standardantworten -->
+            {% elif question.answers %}
+                <div class="form-group">
+                    {% for answer in question.answers %}
+                        <div class="form-check">
+                            <input type="radio" id="answer_{{ answer.id }}" name="answer" value="{{ answer.id }}" required class="form-check-input">
+                            <label for="answer_{{ answer.id }}" class="form-check-label">{{ answer.text }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            <!-- Freitextantwort -->
+            {% else %}
+                <div class="form-group">
+                    <textarea name="free_text" placeholder="Ihre Antwort hier..." required class="form-control"></textarea>
+                </div>
+            {% endif %}
+
+            <!-- Weiter Button -->
+            <button type="submit" class="btn btn-primary btn-block">Weiter</button>
+        </form>
+
+        <!-- Fortschrittsanzeige -->
+        <p class="text-center mt-3">Frage {{ question_index + 1 }} von {{ total_questions }}</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
