@@ -39,14 +39,21 @@ class Answer(db.Model):
     score = db.Column(db.Integer, nullable=True)
 
 def get_questions(module):
-    return Question.query.filter_by(module=module).all()
+    questions = Question.query.filter_by(module=module).all()
+    if not questions:
+        abort(404, description="Keine Fragen für dieses Modul gefunden")
+    return questions
 
-def calculate_module_score(answers):
+def calculate_module_score(answers, module):  # Modul-Parameter hinzufügen
+    if module == 'Basic':
+        return 0  # Basic-Modul gibt immer 0 Punkte
     module_score = 0
     for question_id, answer in answers.items():
         if isinstance(answer, dict) and answer.get('score') is not None:
             module_score += answer['score']
     return module_score
+
+
 
 def resize_image(image_path, size=(300, 300)):
     with Image.open(image_path) as img:
@@ -106,6 +113,12 @@ def basic_quiz():
 def choose_module():
     if request.method == 'POST':
         selected_module = request.form.get('module')
+        
+        # Session-Daten für das Modul zurücksetzen
+        session.pop(f'{selected_module.lower()}_answers', None)
+        session.pop('question_index', None)
+        session.pop('answers', None)
+        
         return redirect(url_for('quiz', module=selected_module))
     return render_template('choose_module.html')
 
@@ -113,44 +126,59 @@ def choose_module():
 def quiz(module):
     questions = get_questions(module)
     total_questions = len(questions)
-
+    
+    # Session-Initialisierung mit Default-Werten
     if 'question_index' not in session or session.get('module') != module:
         session['question_index'] = 0
         session['answers'] = {}
         session['module'] = module
 
-    question_index = session['question_index']
+    question_index = session.get('question_index', 0)
+    question = None  # Initialisierung hinzugefügt
 
     if request.method == 'POST':
-        question = questions[question_index]
+        if not questions or question_index >= total_questions:
+            return redirect(url_for('summary'))
+        
+        try:
+            question = questions[question_index]
+        except IndexError:
+            return redirect(url_for('summary'))
+        
+        # Antwortverarbeitung (existierender Code)
         answer_data = {}
-
         if question.answers:
             answer_id = request.form.get('answer')
             answer = Answer.query.get(answer_id)
-            
-            # Spezialbehandlung für Bildfrage
+            # Bildfrage-Spezialbehandlung
             if "Welche Form oder Kontur gleicht dein Gebäude am ehesten?" in question.text:
                 bild_nummer = answer.text.split()[-1]
                 answer_data['text'] = IMAGE_TERMS.get(bild_nummer, 'Unbekannte Form')
             else:
                 answer_data['text'] = answer.text
-                
             answer_data['score'] = answer.score
         else:
             answer_data['text'] = request.form.get('free_text')
             answer_data['score'] = None
-
+        
         session['answers'][str(question.id)] = answer_data
         session['question_index'] += 1
 
         if session['question_index'] >= total_questions:
             session[f'{module.lower()}_answers'] = session['answers']
             return redirect(url_for('summary'))
-            
+        
         return redirect(url_for('quiz', module=module))
 
-    question = questions[question_index]
+    # GET-Request Handling mit Fehlerprüfung
+    if not questions:
+        abort(404, description="Keine Fragen für dieses Modul gefunden")
+    
+    try:
+        question = questions[question_index]
+    except IndexError:
+        return redirect(url_for('summary'))
+
     return render_template(
         f'{module.lower()}_quiz.html',
         question=question,
@@ -173,42 +201,34 @@ def upload_image():
 
 @app.route('/summary/')
 def summary():
-    # Antworten aus allen Modulen abrufen
     basic_answers = session.get('basic_answers', {})
     express_answers = session.get('express_answers', {})
     advanced_answers = session.get('advanced_answers', {})
 
-    # Alle Antworten und Modul-Scores sammeln
-    all_answers = {
+    module_scores = {
+        'Basic': calculate_module_score(basic_answers, 'Basic'),  # Mit Modulnamen
+        'Express': calculate_module_score(express_answers, 'Express'),
+        'Advanced': calculate_module_score(advanced_answers, 'Advanced')
+    }
+
+    total_score = module_scores['Express'] + module_scores['Advanced']
+
+    session['all_answers'] = {
         'Basic': basic_answers,
         'Express': express_answers,
         'Advanced': advanced_answers
     }
-    
-    module_scores = {
-        'Basic': calculate_module_score(basic_answers),
-        'Express': calculate_module_score(express_answers),
-        'Advanced': calculate_module_score(advanced_answers)
-    }
-    
-    # Gesamtscore berechnen
-    total_score = sum(module_scores.values())
 
-    # Daten in der Session speichern (für PDF-Export)
-    session['all_answers'] = all_answers
-    session['module_scores'] = module_scores
-    session['total_score'] = total_score
-
-    # Fragen aus der Datenbank abrufen
     questions = {str(q.id): q for q in Question.query.all()}
-
+    
     return render_template(
         'summary.html',
-        all_answers=all_answers,
+        all_answers=session['all_answers'],
         module_scores=module_scores,
         total_score=total_score,
         questions=questions
     )
+
 
 
 

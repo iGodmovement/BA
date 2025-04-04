@@ -4,116 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zusammenfassung</title>
-    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <style>
-        body {
+        .subtitle-row {
             background-color: #f8f9fa;
+            font-weight: bold;
+            text-align: center;
         }
-        .summary-header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .table-container {
-            margin-top: 20px;
-        }
-        .module-title {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        .btn-download {
-            background-color: #28a745;
-            color: white;
+        .table th, .table td {
+            vertical-align: middle;
         }
     </style>
 </head>
-<body>
-
-    <!-- Header -->
-    <div class="container mt-5">
-        <div class="summary-header text-center">
-            <h1>Ihr Steckbrief</h1>
-            <p class="lead">Hier finden Sie die Zusammenfassung Ihrer Antworten und Ergebnisse.</p>
-        </div>
-    </div>
-
-    <!-- Gesamtscore -->
-    <div class="container mt-4">
-        <div class="alert alert-info text-center">
-            <h4>Gesamtscore:</h4>
-            <p class="display-4">{{ total_score }}</p>
-        </div>
-    </div>
-
-    <!-- Modulübersicht -->
-    <div class="container table-container">
-        {% for module, answers in all_answers.items() %}
-            <div class="module-title">
-                <h3>{{ module }} Modul</h3>
-                <p><strong>Modul-Score:</strong> {{ module_scores[module] }}</p>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h1 class="mb-0">Zusammenfassung Ihrer Antworten</h1>
             </div>
-
-            <!-- Tabelle für Fragen und Antworten -->
-            <table class="table table-bordered table-striped">
-                <thead class="thead-light">
+            <div class="card-body">
+                
+                <!-- Basic Modul -->
+                <h2 class="mb-4">Basic Modul</h2>
+                <table class="table table-striped">
+                    <thead>
                     <tr>
-                        <th scope="col">Frage</th>
-                        <th scope="col">Antwort</th>
-                        {% if module_scores[module] %}
-                            <th scope="col">Punkte</th>
-                        {% endif %}
+                        <th>Frage</th>
+                        <th>Antwort</th>
                     </tr>
-                </thead>
-                <tbody>
-                    {% set current_subtitle = None %}
-                    {% for question_id, answer in answers.items() %}
-                        <!-- Neue Zeile für jede Frage -->
-                        {% if questions[question_id].subtitle and questions[question_id].subtitle != current_subtitle %}
-                            <!-- Untertitel als Gruppierung -->
-                            {% set current_subtitle = questions[question_id].subtitle %}
-                            <tr class="table-primary">
-                                <td colspan="{% if module_scores[module] %}3{% else %}2{% endif %}">
-                                    {{ current_subtitle }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        <tr>
-                            <td>{{ questions[question_id].text }}</td>
-
-                            <!-- Antwort -->
-                            {% if "Welche Form oder Kontur gleicht dein Gebäude am ehesten?" in questions[question_id].text %}
-                                <td>{{ answer.text }}</td>
-                            {% else %}
-                                <td>{{ answer.text }}</td>
-                            {% endif %}
-
-                            <!-- Punkte (falls vorhanden) -->
-                            {% if answer.score is not none %}
-                                <td>{{ answer.score }}</td>
-                            {% endif %}
-                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for question_id, answer in all_answers['Basic'].items() %}
+                    <tr>
+                        <td>{{ questions[question_id].text }}</td>
+                        <td>{{ answer.text }}</td>
+                    </tr>
                     {% endfor %}
-                </tbody>
-            </table>
-        {% endfor %}
-    </div>
+                    </tbody>
+                </table>
+    
+                <!-- Express und Advanced Module -->
+                {% for module in ['Express', 'Advanced'] %}
+                <h2 class="mt-5">{{ module }} Modul</h2>
+                <div class="alert alert-info">
+                    Modul-Score: <strong>{{ module_scores[module] }} Punkte</strong>
+                </div>
+    
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Frage</th>
+                        <th>Antwort</th>
+                        <th>Punkte</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for question_id, answer in all_answers[module].items() %}
+                    <tr>
+                        <td>{{ questions[question_id].text }}</td>
+                        <td>{{ answer.text }}</td>
+                        <td>{% if answer.score is not none %}{{ answer.score }}{% else %}-{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endfor %}
+            </div>
+            <!-- Basic Modul Hinweis -->
+<div class="alert alert-warning">
+    <h4 class="alert-heading">Hinweis zum Basic Modul</h4>
+    <p class="mb-0">Das Basic Modul dient der Datenerfassung und fließt nicht in die Bewertung ein.</p>
+</div>
+        </div>
 
-    <!-- PDF Download Button -->
-    <div class="container text-center mt-4">
-        <a href="/choose_module" class="btn btn-primary btn-lg">Zur Modulauswahl</a>
-        <a href="/download_pdf" class="btn btn-success btn-lg">PDF herunterladen</a>
+        <!-- Buttons -->
+        <div class="text-center mt-4 mb-5">
+            <a href="/choose_module" class="btn btn-primary btn-lg mr-3">Zur Modulauswahl</a>
+            <a href="/download_pdf" class="btn btn-success btn-lg">PDF herunterladen</a>
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 </body>
 </html>
