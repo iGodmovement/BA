@@ -42,6 +42,12 @@
                     {% endfor %}
                     </tbody>
                 </table>
+
+                <!-- Basic Modul Hinweis -->
+                <div class="alert alert-warning">
+                    <h4 class="alert-heading">Hinweis zum Basic Modul</h4>
+                    <p class="mb-0">Das Basic Modul dient der Datenerfassung und fließt nicht in die Bewertung ein.</p>
+                </div>
     
                 <!-- Express und Advanced Module -->
                 {% for module in ['Express', 'Experten'] %}
@@ -50,33 +56,66 @@
                     Modul-Score: <strong>{{ module_scores[module] }} Punkte</strong>
                 </div>
 
-                <!-- Tabelle zur Bewertung der Scores -->
-<table class="table table-bordered text-center">
-    <thead class="table-light">
-        <tr>
-            <th>Eignung</th>
-            <th>Punkte</th>
-            <th>Empfehlung</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Gering</td>
-            <td>0–18</td>
-            <td>Wirtschaftlich nicht darstellbar – Individuallösung erforderlich</td>
-        </tr>
-        <tr>
-            <td>Mittel</td>
-            <td>19–35</td>
-            <td>Evtl. teilweise umsetzbar (Bitte suchen Sie einen Experten auf)</td>
-        </tr>
-        <tr>
-            <td>Hoch</td>
-            <td>36–50</td>
-            <td>Gute Voraussetzungen für eine serielle Sanierung</td>
-        </tr>
-    </tbody>
-</table>
+               <!-- Bewertungstabelle nur für das aktuelle Modul -->
+               <div class="evaluation-table">
+                {% if module == 'Express' %}
+                <h4>Express-Bewertung</h4>
+                <table class="table table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Eignung</th>
+                            <th>Punkte</th>
+                            <th>Empfehlung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gering</td>
+                            <td>-50 – 18</td>
+                            <td>Wirtschaftlich nicht darstellbar - Individuallösung erforderlich</td>
+                        </tr>
+                        <tr>
+                            <td>Mittel</td>
+                            <td>19 – 35</td>
+                            <td>Evtl. teilweise seriell sanierbar (Bitte suchen Sie einen Experten auf)</td>
+                        </tr>
+                        <tr>
+                            <td>Hoch</td>
+                            <td>36 – 50</td>
+                            <td>Gute Voraussetzungen für eine serielle Sanierung</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% elif module == 'Experten' %}
+                <h4>Experten-Bewertung</h4>
+                <table class="table table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Kategorie</th>
+                            <th>Punktebereich</th>
+                            <th>Bewertung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Niedrig</td>
+                            <td>-100 – 50</td>
+                            <td>Wirtschaftlich nicht darstellbar - Individuallösung erforderlich</td>
+                        </tr>
+                        <tr>
+                            <td>Mittel</td>
+                            <td>51 – 120</td>
+                            <td>Evtl. teilweise seriell sanierbar (Bitte suchen Sie einen Experten auf)</td>
+                        </tr>
+                        <tr>
+                            <td>Hoch</td>
+                            <td>121 – 180</td>
+                            <td>Gute Voraussetzungen für eine serielle Sanierung</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
     
                 <table class="table table-striped">
                     <thead>
@@ -98,13 +137,6 @@
                 </table>
                 {% endfor %}
             </div>
-
-
-            <!-- Basic Modul Hinweis -->
-<div class="alert alert-warning">
-    <h4 class="alert-heading">Hinweis zum Basic Modul</h4>
-    <p class="mb-0">Das Basic Modul dient der Datenerfassung und fließt nicht in die Bewertung ein.</p>
-</div>
         </div>
 
         <!-- Buttons -->
