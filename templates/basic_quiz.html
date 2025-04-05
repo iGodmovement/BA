@@ -102,10 +102,19 @@
             {% endif %}
 
 
-
-            <!-- Weiter Button -->
-            <button type="submit" class="btn btn-primary btn-block">Weiter</button>
-        </form>
+            <!-- Button-Gruppe -->
+            <div class="d-flex justify-content-between mt-4">
+                    <!-- Zurück-Button -->
+                    <button type="submit" name="back" class="btn btn-secondary">
+                        ← Zurück
+                    </button>
+            
+                <!-- Weiter-Button -->
+                <button type="submit" name="next" class="btn btn-primary">
+                    Weiter →
+                </button>
+                </div>
+            </form>
 
         <!-- Fortschrittsanzeige -->
         <p class="text-center mt-3">Frage {{ question_index + 1 }} von {{ total_questions }}</p>
