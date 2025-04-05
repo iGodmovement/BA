@@ -212,15 +212,15 @@ def summary():
     module_scores = {
         'Basic': calculate_module_score(basic_answers, 'Basic'),
         'Express': calculate_module_score(express_answers, 'Express'),
-        'Advanced': calculate_module_score(advanced_answers, 'Advanced')
+        'Experten': calculate_module_score(advanced_answers, 'Experten')
     }
 
-    total_score = module_scores['Express'] + module_scores['Advanced']
+    total_score = module_scores['Express'] + module_scores['Experten']
 
     session['all_answers'] = {
         'Basic': basic_answers,
         'Express': express_answers,
-        'Advanced': advanced_answers
+        'Experten': advanced_answers
     }
 
     questions = {str(q.id): q for q in Question.query.all()}
