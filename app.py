@@ -44,15 +44,16 @@ def get_questions(module):
         abort(404, description="Keine Fragen für dieses Modul gefunden")
     return questions
 
-def calculate_module_score(answers, module):  # Modul-Parameter hinzufügen
+def calculate_module_score(answers, module):
     if module == 'Basic':
         return 0  # Basic-Modul gibt immer 0 Punkte
+    if not answers:  # Falls answers leer/undefined
+        return 0
     module_score = 0
     for question_id, answer in answers.items():
         if isinstance(answer, dict) and answer.get('score') is not None:
             module_score += answer['score']
     return module_score
-
 
 
 def resize_image(image_path, size=(300, 300)):
@@ -113,43 +114,43 @@ def basic_quiz():
 def choose_module():
     if request.method == 'POST':
         selected_module = request.form.get('module')
-        
-        # Session-Daten für das Modul zurücksetzen
-        session.pop(f'{selected_module.lower()}_answers', None)
-        session.pop('question_index', None)
+        # Nur spezifische Keys zurücksetzen:
         session.pop('answers', None)
-        
+        session.pop('question_index', None)
+        session['module'] = selected_module
         return redirect(url_for('quiz', module=selected_module))
     return render_template('choose_module.html')
 
 @app.route('/quiz/<module>', methods=['GET', 'POST'])
 def quiz(module):
+    # Fragen laden und Session initialisieren
     questions = get_questions(module)
-    total_questions = len(questions)
+    total_questions = len(questions)  # Wichtig: Vor allen Verwendungen definieren
+
+    # Session mit Default-Werten initialisieren
+    session.setdefault('answers', {})
+    session.setdefault('question_index', 0)
     
-    # Session-Initialisierung mit Default-Werten
-    if 'question_index' not in session or session.get('module') != module:
+    # Zurücksetzen bei Modulwechsel
+    if session.get('module') != module:
         session['question_index'] = 0
         session['answers'] = {}
         session['module'] = module
 
-    question_index = session.get('question_index', 0)
-    question = None  # Initialisierung hinzugefügt
+    question_index = session['question_index']
 
     if request.method == 'POST':
-        if not questions or question_index >= total_questions:
-            return redirect(url_for('summary'))
-        
         try:
             question = questions[question_index]
         except IndexError:
             return redirect(url_for('summary'))
-        
-        # Antwortverarbeitung (existierender Code)
+
+        # Antwortverarbeitung
         answer_data = {}
         if question.answers:
             answer_id = request.form.get('answer')
             answer = Answer.query.get(answer_id)
+            
             # Bildfrage-Spezialbehandlung
             if "Welche Form oder Kontur gleicht dein Gebäude am ehesten?" in question.text:
                 bild_nummer = answer.text.split()[-1]
@@ -158,22 +159,22 @@ def quiz(module):
                 answer_data['text'] = answer.text
             answer_data['score'] = answer.score
         else:
-            answer_data['text'] = request.form.get('free_text')
+            answer_data['text'] = request.form.get('free_text', '')
             answer_data['score'] = None
-        
+
+        # Session aktualisieren
         session['answers'][str(question.id)] = answer_data
         session['question_index'] += 1
+        session.modified = True
 
+        # Weiterleitung nach letzter Frage
         if session['question_index'] >= total_questions:
             session[f'{module.lower()}_answers'] = session['answers']
             return redirect(url_for('summary'))
         
         return redirect(url_for('quiz', module=module))
 
-    # GET-Request Handling mit Fehlerprüfung
-    if not questions:
-        abort(404, description="Keine Fragen für dieses Modul gefunden")
-    
+    # GET-Request Handling
     try:
         question = questions[question_index]
     except IndexError:
@@ -201,12 +202,13 @@ def upload_image():
 
 @app.route('/summary/')
 def summary():
-    basic_answers = session.get('basic_answers', {})
+    basic_answers = session.get('basic_answers', {})  # Korrekte Variable
     express_answers = session.get('express_answers', {})
     advanced_answers = session.get('advanced_answers', {})
 
+
     module_scores = {
-        'Basic': calculate_module_score(basic_answers, 'Basic'),  # Mit Modulnamen
+        'Basic': calculate_module_score(basic_answers, 'Basic'),
         'Express': calculate_module_score(express_answers, 'Express'),
         'Advanced': calculate_module_score(advanced_answers, 'Advanced')
     }

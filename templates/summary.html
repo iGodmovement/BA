@@ -49,6 +49,34 @@
                 <div class="alert alert-info">
                     Modul-Score: <strong>{{ module_scores[module] }} Punkte</strong>
                 </div>
+
+                <!-- Tabelle zur Bewertung der Scores -->
+<table class="table table-bordered text-center">
+    <thead class="table-light">
+        <tr>
+            <th>Eignung</th>
+            <th>Punkte</th>
+            <th>Empfehlung</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Gering</td>
+            <td>0–18</td>
+            <td>Wirtschaftlich nicht darstellbar – Individuallösung erforderlich</td>
+        </tr>
+        <tr>
+            <td>Mittel</td>
+            <td>19–35</td>
+            <td>Evtl. teilweise umsetzbar (Bitte suchen Sie einen Experten auf)</td>
+        </tr>
+        <tr>
+            <td>Hoch</td>
+            <td>36–50</td>
+            <td>Gute Voraussetzungen für eine serielle Sanierung</td>
+        </tr>
+    </tbody>
+</table>
     
                 <table class="table table-striped">
                     <thead>
@@ -70,6 +98,8 @@
                 </table>
                 {% endfor %}
             </div>
+
+
             <!-- Basic Modul Hinweis -->
 <div class="alert alert-warning">
     <h4 class="alert-heading">Hinweis zum Basic Modul</h4>
