@@ -31,6 +31,8 @@ class Question(db.Model):
     subtitle = db.Column(db.String(200), nullable=True)
     answers = db.relationship('Answer', backref='question', lazy=True)
     image = db.Column(db.String(200), nullable=True)
+    info_popup = db.Column(db.String(500), nullable=True)  # Popup-Text
+
 
 class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -336,7 +338,7 @@ def populate_database():
     db.session.commit()
     
     # Basic Modul
-    q1 = Question(module="Basic", text="Projektname")
+    q1 = Question(module="Basic", text="Projektname", info_popup="Geben Sie den Namen Ihres Projekts ein, um es später leichter identifizieren zu können.")
     q2 = Question(module="Basic", text="Standort")
     q3 = Question(module="Basic", text="Wer ist Eigentümer des Gebäudes?")
     a3_1 = Answer(question=q3, text="Privatperson", score=3)
