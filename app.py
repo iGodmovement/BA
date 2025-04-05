@@ -39,6 +39,7 @@ class Answer(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
     text = db.Column(db.String(200), nullable=True)
     score = db.Column(db.Integer, nullable=True)
+    info_popup = db.Column(db.String(500), nullable=True)
 
 def get_questions(module):
     questions = Question.query.filter_by(module=module).all()
@@ -341,8 +342,8 @@ def populate_database():
     q1 = Question(module="Basic", text="Projektname", info_popup="Geben Sie den Namen Ihres Projekts ein, um es später leichter identifizieren zu können.")
     q2 = Question(module="Basic", text="Standort")
     q3 = Question(module="Basic", text="Wer ist Eigentümer des Gebäudes?")
-    a3_1 = Answer(question=q3, text="Privatperson", score=3)
-    a3_2 = Answer(question=q3, text="Unternehmen", score=4)
+    a3_1 = Answer(question=q3, text="Privatperson", score=3, info_popup="Geben Sie den Namen Ihres Projekts ein, um es später leichter identifizieren zu können.")
+    a3_2 = Answer(question=q3, text="Unternehmen", score=4, info_popup="Geben Sie den Namen Ihres Projekts ein, um es später leichter identifizieren zu können.")
     a3_3 = Answer(question=q3, text="Öffentliche Hand", score=2)
     a3_4 = Answer(question=q3, text="Gesellschaft", score=4)
     a3_5 = Answer(question=q3, text="Sonstiges", score=5)
@@ -365,14 +366,14 @@ def populate_database():
     a6_3 = Answer(question=q6, text="Umnutzung", score=5)
 
     # Express Modul
-    q7 = Question(module="Express", text="Welche Form oder Kontur gleicht dein Gebäude am ehesten?", image="question_7.jpg")
+    q7 = Question(module="Express", text="Welche Form oder Kontur gleicht dein Gebäude am ehesten?", image="question_7.jpg", info_popup="Geben Sie den Namen Ihres Projekts ein, um es später leichter identifizieren zu können.")
     a7_1 = Answer(question=q7, text="Bild 1", score=3)
     a7_2 = Answer(question=q7, text="Bild 2", score=2)
     a7_3 = Answer(question=q7, text="Bild 3", score=1)
     a7_4 = Answer(question=q7, text="Bild 4", score=0)
 
     q8 = Question(module="Express", text="Stammt das Gebäude aus dem Zeitraum zwischen 1950 und 1979 (energetisch schlecht aber strukturell gut geeignet)?")
-    a8_1 = Answer(question=q8, text="Ja (1950-1979)", score=2)
+    a8_1 = Answer(question=q8, text="Ja (1950-1979)", score=2, info_popup="Geben Sie den Namen Ihres Projekts ein, um es später leichter identifizieren zu können.")
     a8_2 = Answer(question=q8, text="Teilweise (1980-1999)", score=1)
     a8_3 = Answer(question=q8, text="Nein (vor 1950 oder nach 2000)", score=0)
 
@@ -402,8 +403,8 @@ def populate_database():
 
 
     # Advanced Modul
-    q14 = Question(module="Advanced", text="Ist die Gebäudeform klar und strukturiert?", subtitle="Gebäudestruktur und Kubatur")
-    a14_1 = Answer(question=q14, text="Ja", score=2)
+    q14 = Question(module="Advanced", text="Ist die Gebäudeform klar und strukturiert?", subtitle="Gebäudestruktur und Kubatur", info_popup="Geben Sie den Namen Ihres Projekts ein, um es später leichter identifizieren zu können.")
+    a14_1 = Answer(question=q14, text="Ja", score=2, info_popup="Geben Sie den Namen Ihres Projekts ein, um es später leichter identifizieren zu können.")
     a14_2 = Answer(question=q14, text="Nein", score=0)
     a14_3 = Answer(question=q14, text="Teilweise", score=1)
 

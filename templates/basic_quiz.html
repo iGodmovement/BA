@@ -84,6 +84,12 @@
                         <div class="form-check">
                             <input type="radio" id="answer_{{ answer.id }}" name="answer" value="{{ answer.id }}" required class="form-check-input">
                             <label for="answer_{{ answer.id }}" class="form-check-label">{{ answer.text }}</label>
+                            {% if answer.info_popup %}
+                <div class="question-tooltip ms-2">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">{{ answer.info_popup }}</span>
+                </div>
+            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
