@@ -6,48 +6,74 @@
     <title>Modulauswahl</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-<body>
-    <div class="container mt-5">
-        <div class="card shadow-lg">
-            <div class="card-body text-center">
-             <title>Auswahlhilfe: Modulwahl</title>
     <style>
-        ul {
-            margin-left: 20px; /* Einrücken der Stichpunkte */
+        .module-section {
+            margin-bottom: 30px;
         }
-        li {
-            text-align: right; /* Rechtsbündige Formatierung der Stichpunkte */
+        .module-description {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .module-description p {
+            margin: 0;
+            display: flex;
+        }
+        .module-description p strong {
+            width: 120px; /* Einheitliche Breite für die Labels */
+            flex-shrink: 0;
+        }
+        .module-description p span {
+            flex-grow: 1; /* Text füllt den verbleibenden Platz */
         }
     </style>
-<div>
-    <h1>Auswahlhilfe: Welches Modul passt zu Ihrem Projekt?</h1>
+</head>
+<body>
 
-    <h2>Express-Modul</h2>
-    <ul>
-        <li><strong>Ziel:</strong> Schnelle Ersteinschätzung der Eignung für serielle Sanierung.</li>
-        <li><strong>Fokus:</strong> Kernfragen wie Baujahr, Gebäudetechnik und Wiederholungsfaktoren.</li>
-        <li><strong>Einsatz:</strong> Frühe Planungsphase, grobe Orientierung.</li>
-        <li><strong>Empfehlung:</strong> Für eine schnelle und einfache Bewertung.</li>
-    </ul>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <a class="navbar-brand" href="#">Quiz App</a>
+    </nav>
 
-    <h2>Advanced-Modul</h2>
-    <ul>
-        <li><strong>Ziel:</strong> Detaillierte Analyse aller relevanten Kriterien.</li>
-        <li><strong>Fokus:</strong> Gebäudestruktur, Statik, Technik, Energieeffizienz und Wirtschaftlichkeit.</li>
-        <li><strong>Einsatz:</strong> Fundierte Entscheidungsgrundlage für konkrete Sanierungspläne.</li>
-        <li><strong>Empfehlung:</strong> Für umfassende und präzise Bewertungen.</li>
-    </ul>
+    <h1 class="text-center mb-4">Auswahlhilfe: Welches Modul passt zu Ihrem Projekt?</h1>
 
-    <p style="text-align: right;">Diese Übersicht hilft Ihnen, das passende Modul je nach Projektphase und Informationsbedarf auszuwählen!</p>
-    
-                <form method="POST">
-                    <button type="submit" name="module" value="Express" class="btn btn-primary btn-lg me-3">Express Modul</button>
-                    <button type="submit" name="module" value="Advanced" class="btn btn-secondary btn-lg">Advanced Modul</button>
-                </form>
+    <main class="container mt-5">
+        <!-- Express-Modul -->
+        <section class="card shadow-lg module-section">
+            <div class="card-body">
+                <h2 class="card-title text-center">Express-Modul</h2>
+                <div class="module-description">
+                    <p><strong>Ziel:</strong><span>Schnelle Ersteinschätzung der Eignung für serielle Sanierung.</span></p>
+                    <p><strong>Fokus:</strong><span>Kernfragen wie Baujahr, Gebäudetechnik und Wiederholungsfaktoren.</span></p>
+                    <p><strong>Einsatz:</strong><span>Frühe Planungsphase, grobe Orientierung.</span></p>
+                    <p><strong>Empfehlung:</strong><span>Für eine schnelle und einfache Bewertung.</span></p>
                 </div>
             </div>
+        </section>
+
+        <!-- Advanced-Modul -->
+        <section class="card shadow-lg module-section">
+            <div class="card-body">
+                <h2 class="card-title text-center">Advanced-Modul</h2>
+                <div class="module-description">
+                    <p><strong>Ziel:</strong><span>Detaillierte Analyse aller relevanten Kriterien.</span></p>
+                    <p><strong>Fokus:</strong><span>Gebäudestruktur, Statik, Technik, Energieeffizienz und Wirtschaftlichkeit.</span></p>
+                    <p><strong>Einsatz:</strong><span>Fundierte Entscheidungsgrundlage für konkrete Sanierungspläne.</span></p>
+                    <p><strong>Empfehlung:</strong><span>Für umfassende und präzise Bewertungen.</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Abschlussbeschreibung -->
+        <div class="text-center mb-4">
+            <p>Hier können Sie nach Ihrer Präferenz das passende Modul auszuwählen!</p>
         </div>
-    </div>
+
+        <!-- Buttons -->
+        <form method="POST" class="text-center">
+            <button type="submit" name="module" value="Express" class="btn btn-primary btn-lg me-3">Express Modul</button>
+            <button type="submit" name="module" value="Advanced" class="btn btn-secondary btn-lg">Advanced Modul</button>
+        </form>
+    </main>
 </body>
 </html>
