@@ -230,27 +230,28 @@ def upload_image():
 
 @app.route('/summary/')
 def summary():
-    basic_answers = session.get('basic_answers', {})  # Korrekte Variable
+    basic_answers = session.get('basic_answers', {})
     express_answers = session.get('express_answers', {})
-    advanced_answers = session.get('advanced_answers', {})
+    advanced_answers = session.get('advanced_answers', {})  # Key: 'Advanced'
 
-
+    # Korrekte Schlüsselverwendung
     module_scores = {
         'Basic': calculate_module_score(basic_answers, 'Basic'),
         'Express': calculate_module_score(express_answers, 'Express'),
-        'Experten': calculate_module_score(advanced_answers, 'Advanced')
+        'Advanced': calculate_module_score(advanced_answers, 'Advanced')  # Key angepasst
     }
 
-    total_score = module_scores['Express'] + module_scores['Experten']
+    total_score = module_scores['Express'] + module_scores['Advanced']
 
+    # Schlüssel konsistent halten
     session['all_answers'] = {
         'Basic': basic_answers,
         'Express': express_answers,
-        'Experten': advanced_answers
+        'Advanced': advanced_answers  # Key: 'Advanced'
     }
-
+    session['module_scores'] = module_scores  # Wichtig für die PDF
     questions = {str(q.id): q for q in Question.query.all()}
-    
+
     return render_template(
         'summary.html',
         all_answers=session['all_answers'],
@@ -259,13 +260,13 @@ def summary():
         questions=questions
     )
 
+
 @app.route('/download_pdf', methods=['GET'])
 def download_pdf():
     # Daten aus der Session abrufen
     all_answers = session.get('all_answers', {})
     module_scores = session.get('module_scores', {})
-    total_score = session.get('total_score', 0)
-    questions = {str(q.id): q for q in Question.query.all()}
+    questions = {str(q.id): q for q in Question.query.all()}  # Fragen aus der Datenbank
 
     # PDF-Konfiguration
     pdf_buffer = BytesIO()
@@ -273,71 +274,74 @@ def download_pdf():
     elements = []
     styles = getSampleStyleSheet()
 
-    # Titel und Gesamtscore
+    # Titel hinzufügen
     elements.append(Paragraph("Sanierungsbewertung - Zusammenfassung", styles['Title']))
-    elements.append(Spacer(1, 12))
-    elements.append(Paragraph(f"Gesamtscore: {total_score} Punkte", styles['Heading2']))
-    elements.append(Spacer(1, 24))
+    elements.append(Spacer(1, 20))
 
     # Module verarbeiten
-    for module in ['Basic', 'Express', 'Experten']:
+    for module in ['Basic', 'Express', 'Advanced']:
         if module in all_answers and all_answers[module]:
-            # Modul-Header
+            # Modul-Titel
             elements.append(Paragraph(f"{module} Modul", styles['Heading2']))
-            
-            # Modul-Score anzeigen (außer Basic)
+
+            # Modul-Score hervorheben (außer Basic)
             if module != 'Basic':
-                score = module_scores.get(module, 0)
-                elements.append(Paragraph(f"Modul-Score: {score} Punkte", styles['Heading3']))
+                score = module_scores.get(module, 0)  # Korrekte Modul-Scores aus der Session abrufen
+                score_paragraph = Paragraph(f"<b>Modul-Score: {score} Punkte</b>", styles['Normal'])
+                elements.append(score_paragraph)
                 elements.append(Spacer(1, 12))
 
                 # Bewertungstabelle hinzufügen
                 if module == 'Express':
                     eval_data = [
                         ["Eignung", "Punkte", "Empfehlung"],
-                        ["Gering (0-18)", "Wirtschaftlich nicht darstellbar"],
-                        ["Mittel (19-35)", "Teilweise umsetzbar"],
-                        ["Hoch (36-50)", "Gute Voraussetzungen"]
+                        ["Gering", "-50 – 18", "Wirtschaftlich nicht darstellbar\nIndividuallösung erforderlich"],
+                        ["Mittel", "19 – 35", "Eingeschränkt möglich\n(Bitte suchen Sie einen Experten auf)"],
+                        ["Hoch", "36 – 60", "Gute Voraussetzungen für eine serielle Sanierung"]
                     ]
-                else:  # Experten-Modul
+                elif module == 'Advanced':
                     eval_data = [
                         ["Kategorie", "Punktebereich", "Bewertung"],
-                        ["Niedrig (0-20)", "Sanierung unwirtschaftlich"],
-                        ["Mittel (21-40)", "Expertenrat empfohlen"],
-                        ["Hoch (41-60)", "Sehr gute Voraussetzungen"]
+                        ["Niedrig", "-100 – 50", "Wirtschaftlich nicht darstellbar\nIndividuallösung erforderlich"],
+                        ["Mittel", "51 – 120", "Eingeschränkt möglich\n(Bitte suchen Sie einen Experten auf)"],
+                        ["Hoch", "121 – 180", "Sehr gute Voraussetzungen für eine serielle Sanierung"]
                     ]
 
-                eval_table = Table(eval_data)
+                eval_table = Table(eval_data, colWidths=[150, 100, 250])  # Einheitliche Spaltenbreiten
                 eval_table.setStyle(TableStyle([
                     ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-                    ('TEXTCOLOR', (0,0), (-1,0), colors.black),
+                    ('TEXTCOLOR', (0,0), (-1,-1), colors.black),
                     ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-                    ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-                    ('FONTSIZE', (0,0), (-1,0), 10),
-                    ('BOTTOMPADDING', (0,0), (-1,0), 12),
+                    ('FONTNAME', (0,0), (-1,-1), 'Helvetica'),
+                    ('FONTSIZE', (0,0), (-1,-1), 10),
+                    ('BOTTOMPADDING', (0,0), (-1,-1), 8),
                     ('GRID', (0,0), (-1,-1), 1, colors.black)
                 ]))
                 elements.append(eval_table)
-                elements.append(Spacer(1, 24))
+                elements.append(Spacer(1, 20))
 
-            # Fragen/Antworten-Tabelle
-            data = [["Frage", "Antwort", "Punkte" if module != 'Basic' else ""]]
+            # Fragen/Antworten-Tabelle hinzufügen
+            data = [["Frage", "Antwort"]] if module == 'Basic' else [["Frage", "Antwort", "Punkte"]]
             for qid, answer in all_answers[module].items():
-                question = questions.get(qid, Question(text="Unbekannte Frage"))
-                data.append([
-                    Paragraph(question.text, styles['Normal']),
-                    Paragraph(answer.get('text', ''), styles['Normal']),
-                    str(answer.get('score', '')) if module != 'Basic' else ""
-                ])
+                question_text = questions.get(qid).text if qid in questions else "Unbekannte Frage"
+                answer_text = answer.get('text', '')
+                score_text = str(answer.get('score', '-')) if module != 'Basic' else ""
 
-            table = Table(data, colWidths=[250, 150, 50])
+                if module == 'Basic':
+                    data.append([Paragraph(question_text, styles['Normal']), Paragraph(answer_text, styles['Normal'])])
+                else:
+                    data.append([Paragraph(question_text, styles['Normal']), Paragraph(answer_text, styles['Normal']), score_text])
+
+            # Einheitliche Tabellenbreite für alle Module
+            table_col_widths = [250, 250] if module == 'Basic' else [200, 200, 100]
+            table = Table(data, colWidths=table_col_widths)
             table.setStyle(TableStyle([
                 ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-                ('TEXTCOLOR', (0,0), (-1,0), colors.black),
+                ('TEXTCOLOR', (0,0), (-1,-1), colors.black),
                 ('ALIGN', (0,0), (-1,-1), 'LEFT'),
-                ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0,0), (-1,0), 10),
-                ('BOTTOMPADDING', (0,0), (-1,0), 12),
+                ('FONTNAME', (0,0), (-1,-1), 'Helvetica'),
+                ('FONTSIZE', (0,0), (-1,-1), 10),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 8),
                 ('GRID', (0,0), (-1,-1), 1, colors.black)
             ]))
             elements.append(table)
@@ -346,15 +350,12 @@ def download_pdf():
     # PDF generieren
     pdf.build(elements)
     pdf_buffer.seek(0)
-    
+
     response = make_response(pdf_buffer.getvalue())
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'attachment; filename=sanierungsbewertung.pdf'
-    
+    response.headers['Content-Disposition'] = 'attachment; filename=Leitfaden_Steckbrief.pdf'
+
     return response
-
-
-
 
 def populate_database():
     db.session.execute(Answer.__table__.delete())
