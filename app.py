@@ -21,7 +21,7 @@ IMAGE_TERMS = {
     '1': 'Plattenbau',
     '2': 'Industire oder Sporthallen',
     '3': 'Mehrfamilienhaus',
-    '4': 'Einfamilienhaus(kopmlex)'
+    '4': 'Einfamilienhaus(komplex)'
 }
 
 class Question(db.Model):
@@ -392,11 +392,11 @@ def populate_database():
    # Express Modul
 
     # Frage 7: Welche Form gleicht dem Gebäude?
-    q7 = Question(module="Express", text="Welche Form oder Kontur gleicht dein Gebäude am ehesten?", image="question_7.jpg")
+    q7 = Question(module="Express", text="Welcher Form oder Kontur gleicht dein Gebäude am ehesten?", image="question_7.jpg")
     a7_1 = Answer(question=q7, text="Plattenbau", score=5, info_popup="Quelle Bild:https://www.dba-bau.com/wp-content/uploads/platensiedlung_p6.jpg")
     a7_2 = Answer(question=q7, text="Industrie oder Sporthallen", score=4, info_popup="Quelle Bild:https://www.holzbau-kappler.de/referenzen/fassadensanierung-turnhalle-wachtberg/ ")
     a7_3 = Answer(question=q7, text="Mehrfamilienhaus", score=4, info_popup="Quelle Bild:https://www.schwoererhaus.de/wp-content/uploads/2023/11/Ostseite-vorher.jpg ")
-    a7_4 = Answer(question=q7, text="Einfamilienhaus(kopmlex)", score=0, info_popup="Quelle Bild:https://thumbs.dreamstime.com/b/komplexe-h%C3%A4user-mit-kellergaragen-und-treppen-vorne-san-francisco-kalifornien-links-befindet-sich-ein-haus-holunder-ornamenten-253238686.jpg ")
+    a7_4 = Answer(question=q7, text="Einfamilienhaus(komplex)", score=0, info_popup="Quelle Bild:https://thumbs.dreamstime.com/b/komplexe-h%C3%A4user-mit-kellergaragen-und-treppen-vorne-san-francisco-kalifornien-links-befindet-sich-ein-haus-holunder-ornamenten-253238686.jpg ")
 
     # Frage 8: Stammt das Gebäude aus dem Zeitraum zwischen 1950 und 1979?
     q8 = Question(module="Express", text="Stammt das Gebäude aus dem Zeitraum zwischen 1950 und 1979?")
@@ -455,7 +455,7 @@ def populate_database():
     q17 = Question(module="Advanced", text="Anzahl der Vor-/Rücksprüngen?",subtitle="Gebäudestruktur und Kubatur", info_popup="Vorsprünge: Erker, Balkone oder auskragende Obergeschosse Rücksprünge: Loggien, zurückversetzte Eingänge und innenliegende Balkone")
     a17_1 = Answer(question=q17, text="Wenig", score=4, info_popup="(1-2)")
     a17_2 = Answer(question=q17, text="Mittel", score=2, info_popup="(2-5)")
-    a17_3 = Answer(question=q17, text="Viel", score=0, info_popup="(5-<10)")
+    a17_3 = Answer(question=q17, text="Viel", score=0, info_popup="(5>10)")
 
     q18 = Question(module="Advanced", text="Vorhandene Balkone?",subtitle="Gebäudestruktur und Kubatur")
     a18_1 = Answer(question=q18, text="Keine", score=5)
