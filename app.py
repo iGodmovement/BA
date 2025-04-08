@@ -21,7 +21,7 @@ IMAGE_TERMS = {
     '1': 'Plattenbau',
     '2': 'Industire oder Sporthallen',
     '3': 'Mehrfamilienhaus',
-    '4': 'Einfamilienhaus(komplex)'
+    '4': 'Einfamilienhaus'
 }
 
 class Question(db.Model):
@@ -393,10 +393,10 @@ def populate_database():
 
     # Frage 7: Welche Form gleicht dem Gebäude?
     q7 = Question(module="Express", text="Welcher Form oder Kontur gleicht dein Gebäude am ehesten?", image="question_7.jpg")
-    a7_1 = Answer(question=q7, text="Plattenbau", score=5, info_popup="Quelle Bild:https://www.dba-bau.com/wp-content/uploads/platensiedlung_p6.jpg")
+    a7_1 = Answer(question=q7, text="Plattenbau", score=5, info_popup="Quelle Bild:https://pixabay.com/de/photos/mehrfamilienhaus-block-geb%C3%A4ude-haus-835817/")
     a7_2 = Answer(question=q7, text="Industrie oder Sporthallen", score=4, info_popup="Quelle Bild:https://www.holzbau-kappler.de/referenzen/fassadensanierung-turnhalle-wachtberg/ ")
-    a7_3 = Answer(question=q7, text="Mehrfamilienhaus", score=4, info_popup="Quelle Bild:https://www.schwoererhaus.de/wp-content/uploads/2023/11/Ostseite-vorher.jpg ")
-    a7_4 = Answer(question=q7, text="Einfamilienhaus(komplex)", score=0, info_popup="Quelle Bild:https://thumbs.dreamstime.com/b/komplexe-h%C3%A4user-mit-kellergaragen-und-treppen-vorne-san-francisco-kalifornien-links-befindet-sich-ein-haus-holunder-ornamenten-253238686.jpg ")
+    a7_3 = Answer(question=q7, text="Mehrfamilienhaus", score=4, info_popup="Quelle Bild:https://www.holzbau-kappler.de/referenzen/serielle-sanierung-in-idstein/")
+    a7_4 = Answer(question=q7, text="Einfamilienhaus", score=0, info_popup="Quelle Bild:https://pixabay.com/de/photos/haus-neubau-eigenheim-wohung-66627/")
 
     # Frage 8: Stammt das Gebäude aus dem Zeitraum zwischen 1950 und 1979?
     q8 = Question(module="Express", text="Stammt das Gebäude aus dem Zeitraum zwischen 1950 und 1979?")
@@ -471,7 +471,7 @@ def populate_database():
     q20 = Question(module="Advanced", text="Wie sind die Grenzabstände des Gebäudes auf dem Grundstück?",subtitle="Gebäudestruktur und Kubatur")
     a20_1 = Answer(question=q20, text="Gut, großzügige Abstände", score=3)
     a20_2 = Answer(question=q20, text="Schwierig zu beurteilen", score=1)
-    a20_3 = Answer(question=q20, text="Grundstück, geringe Abstände", score=0)
+    a20_3 = Answer(question=q20, text="Geringe Abstände", score=0)
 
     # Gebäudetyp und Nutzung
     q21 = Question(module="Advanced", text="Um welchen Gebäudetyp handelt es sich?",subtitle="Gebäudetyp und Nutzung")
