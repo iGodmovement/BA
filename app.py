@@ -556,15 +556,16 @@ def populate_database():
     a34_3 = Answer(question=q34, text="Bereits saniert (+1980)", score=0)
 
     q35 = Question(module="Advanced",
-                text="Welche Energieeffizienzklasse ist erreichbar?",subtitle="Energieeffizienz & Förderfähigkeit")
+                text="Welcher KfW-Effizienzhausstandard ist in Zukunft evtl. erreichbar?",subtitle="Energieeffizienz & Förderfähigkeit")
     a35_1 = Answer(question=q35, text="Problemlos EH55/EH40 möglich", score=6)
     a35_2 = Answer(question=q35, text="Schwierig EH55 knapp möglich", score=3)
     a35_3 = Answer(question=q35, text="Nicht erreichbar/extrem teuer", score=0)
     a35_4 = Answer(question=q35, text="Nicht beurteilbar", score=0)
 
-    q36 = Question(module="Advanced", text="Ist eine Gesamtförderquote von mind. 20-25% möglich?",subtitle="Energieeffizienz & Förderfähigkeit")
-    a36_1 = Answer(question=q36, text="Ja", score=6)
-    a36_2 = Answer(question=q36, text="Nein", score=0)
+    q36 = Question(module="Advanced", text="Wie würden Sie den aktuellen Energieverbrauch des Gebäudes einschätzen?",subtitle="Energieeffizienz & Förderfähigkeit")
+    a36_1 = Answer(question=q36, text="Niedrig", score=-2)
+    a36_2 = Answer(question=q36, text="Mittel", score=3)
+    a36_3 = Answer(question=q36, text="Hoch", score=6)
 
     q37 = Question(module="Advanced", text="Gibt es Potential durch zusätzliche Maßnahmen, höhere Förderquoten zu erreichen?",subtitle="Energieeffizienz & Förderfähigkeit" ,info_popup="z.B. Photovoltaikanlagen")
     a37_1 = Answer(question=q37, text="Ja", score=2)
@@ -669,7 +670,7 @@ def populate_database():
         a33_1, a33_2, a33_3,
         a34_1, a34_2, a34_3,
         a35_1, a35_2,
-        a36_1, a36_2,
+        a36_1, a36_2, a36_3,
         a37_1, a37_2,
         a38_1, a38_2,
         a39_1, a39_2,a39_3,
