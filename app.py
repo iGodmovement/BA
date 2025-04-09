@@ -563,9 +563,9 @@ def populate_database():
     a35_4 = Answer(question=q35, text="Nicht beurteilbar", score=0)
 
     q36 = Question(module="Advanced", text="Wie würden Sie den aktuellen Energieverbrauch des Gebäudes einschätzen?",subtitle="Energieeffizienz & Förderfähigkeit")
-    a36_1 = Answer(question=q36, text="Niedrig", score=-2), info_popup="Das Gebäude hat einen geschätzten Energieverbrauch von unter 100 kWh/m² pro Jahr (z. B. Effizienzklasse A bis C).")
-    a36_2 = Answer(question=q36, text="Mittel", score=3), info_popup="Der Energieverbrauch liegt zwischen 100 und 200 kWh/m² pro Jahr (z. B. Effizienzklasse D bis F).")
-    a36_3 = Answer(question=q36, text="Hoch", score=6), info_popup="Der Energieverbrauch übersteigt 200 kWh/m² pro Jahr (z. B. Effizienzklasse G oder H).")
+    a36_1 = Answer(question=q36, text="Niedrig", score=-2, info_popup="Das Gebäude hat einen geschätzten Energieverbrauch von unter 100 kWh/m² pro Jahr (z. B. Effizienzklasse A bis C).")
+    a36_2 = Answer(question=q36, text="Mittel", score=3, info_popup="Der Energieverbrauch liegt zwischen 100 und 200 kWh/m² pro Jahr (z. B. Effizienzklasse D bis F).")
+    a36_3 = Answer(question=q36, text="Hoch", score=6, info_popup="Der Energieverbrauch übersteigt 200 kWh/m² pro Jahr (z. B. Effizienzklasse G oder H).")
 
     q37 = Question(module="Advanced", text="Gibt es Potential durch zusätzliche Maßnahmen, höhere Förderquoten zu erreichen?",subtitle="Energieeffizienz & Förderfähigkeit" ,info_popup="z.B. Photovoltaikanlagen")
     a37_1 = Answer(question=q37, text="Ja", score=2)
